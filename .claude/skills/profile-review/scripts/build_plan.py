@@ -95,6 +95,9 @@ def validate(data):
     labels = data["meta"].get("labels") or {}
     if not isinstance(labels, dict) or set(labels) - set(LABELS):
         fail(f'"meta.labels" may only contain: {", ".join(LABELS)}')
+    if not all(isinstance(v, str) and v.strip() for v in labels.values()):
+        fail('"meta.labels" values must be non-empty text')
+    data["meta"]["labels"] = labels               # null is allowed and means "no overrides"
     for key in ("subtitle", "footer"):
         data[key] = data.get(key) or ""
         if not isinstance(data[key], str):
@@ -173,6 +176,20 @@ def segments(text):
     return out
 
 
+def missing_glyphs(data, font_path):
+    """Characters the embedded font cannot draw (emoji, rare scripts): the PDF shows empty
+    boxes for them. The DOCX is not affected."""
+    from reportlab.pdfbase.ttfonts import TTFont
+    covered = TTFont("GlyphProbe", str(font_path)).face.charToGlyph
+    texts = [data["title"], data["person"], data["subtitle"], data["footer"], *data["intro"]]
+    for sec in data["sections"]:
+        texts.append(sec["heading"])
+        for b in sec["blocks"]:
+            texts += [b.get("text") or "", b.get("label") or "", *(b.get("items") or []),
+                      *(b.get("columns") or []), *(c for row in b.get("rows") or [] for c in row)]
+    return sorted({c for t in texts for c in t if not c.isspace() and ord(c) not in covered})
+
+
 def count_label(block, labels):
     n, limit = len(block["text"]), block.get("limit")
     count = f"{n:,} / {limit:,} {labels['chars']}" if limit else f"{n:,} {labels['chars']}"
@@ -199,7 +216,7 @@ def build_pdf(data, out_path, page_size, fonts):
     labels = {**LABELS, **data["meta"].get("labels", {})}
     page = A4 if page_size == "a4" else letter
     margin = 0.7 * inch
-    width = page[0] - 2 * margin
+    width = page[0] - 2 * margin - 12             # the page frame keeps 6 pt of padding on each side
 
     def style(name, font=regular, size=9.8, leading=13.6, color=INK, **kw):
         return ParagraphStyle(name, fontName=font, fontSize=size, leading=leading,
@@ -460,9 +477,18 @@ def main():
         fail(f'page size must be "a4" or "letter", got "{size}"')
     fonts = find_fonts(args.font)
 
+    from reportlab.platypus.doctemplate import LayoutError
     Path(args.out_pdf).resolve().parent.mkdir(parents=True, exist_ok=True)
-    build_pdf(data, args.out_pdf, size, fonts)
+    try:
+        build_pdf(data, args.out_pdf, size, fonts)
+    except LayoutError as exc:
+        fail(f"a block does not fit on one page ({str(exc)[:120]}…) - split a very long table cell "
+             "or text into several")
     print(f"pdf: {args.out_pdf} (font: {fonts[0]}, page: {size})")
+    missing = missing_glyphs(data, fonts[1])
+    if missing:
+        print(f"warning: the font has no glyph for {' '.join(missing)} - the PDF shows empty boxes "
+              "there (the DOCX is fine); drop them from paste texts, keep them only in \"now\" quotes")
     if args.docx:
         Path(args.docx).resolve().parent.mkdir(parents=True, exist_ok=True)
         build_docx(data, args.docx, size)
@@ -471,6 +497,8 @@ def main():
         import pypdfium2 as pdfium
         out = Path(args.preview)
         out.mkdir(parents=True, exist_ok=True)
+        for old in out.glob("plan_page_*.png"):       # a shorter rebuild must not leave stale pages
+            old.unlink()
         pdf = pdfium.PdfDocument(str(args.out_pdf))
         for i in range(len(pdf)):
             pdf[i].render(scale=1.4).to_pil().save(out / f"plan_page_{i + 1}.png")

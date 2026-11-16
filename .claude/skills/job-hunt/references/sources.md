@@ -50,11 +50,12 @@ old `/jobs/search/` address still opens but redirects and silently drops `locati
     not stable - click the chip rather than hard-coding it).
 - Job ID: `jk=<16 hex chars>` in card links; canonical link
   `https://<cc>.indeed.com/viewjob?jk=<jk>`.
-- Opening `viewjob` pages often triggers a Cloudflare check. Read descriptions in
-  the search page's side pane instead: click the card (URL gets `vjk=<jk>`), then
-  read the pane's text.
-- If the whole site shows "additional verification", skip it this run and note it;
-  it usually works after the user passes the check once by hand.
+- Read descriptions in the search page's side pane, the site's normal view: click
+  the card (the URL gets `vjk=<jk>`), then read the pane's text.
+- A security check ("additional verification", Cloudflare) can appear on any page.
+  Never try to pass it or get around it: skip Indeed for this run, record its cards
+  as `unread`, and tell the user - it usually works again after they pass the check
+  once by hand.
 - "Remote in <city>" means remote within that area. US postings are typically W2 /
   US-authorization only unless they say otherwise.
 - Boolean `OR` is unreliable - run separate queries.
@@ -67,8 +68,8 @@ old `/jobs/search/` address still opens but redirects and silently drops `locati
     `Front End`, `DevOps`, `AI/ML`, `QA`); `exp`: `0-1`, `1-3`, `3-5`, `5plus`;
     `remote` flag = remote; `city=<City>` for offices.
   - Free-text: `https://jobs.dou.ua/vacancies/?search=<q>`
-- The list loads ~20 items with a "more vacancies" button ("Більше вакансій"); items are newest first
-  with a date on each card. Stop when dates fall outside the window.
+- The list loads ~20 items with a "more vacancies" button ("Більше вакансій"); items
+  are newest first with a date on each card. Stop when dates fall outside the window.
 - The card date is the date of the latest re-publication. Vacancy IDs grow over time,
   so an ID far below its neighbours is an old vacancy that was bumped - keep it, but
   mark it "republished".

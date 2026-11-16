@@ -4,7 +4,7 @@
 Structural checks (what a parser will "see"): page count, text extraction with two
 independent parsers, unreadable glyphs, embedded fonts, section headings and their
 order, unusual characters, an e-mail address, no keyword metadata, no [placeholder]
-left over from a template or a profile review plan.
+left over from a template or a profile review plan, no "(unconfirmed)" marker.
 Truth checks: forbidden terms (things the candidate must not claim or disclose) and
 job titles / employers / dates identical to the master resume.
 Information only: keyword coverage against the vacancy.
@@ -13,13 +13,17 @@ Usage (run with the kit's venv interpreter):
     python check_resume.py resume.pdf
         [--keywords keywords.json] [--forbid forbid.json]
         [--resume resume.json] [--master master-resume.json]
-        [--max-pages 2] [--preview DIR] [--json]
+        [--max-pages 2] [--preview DIR] [--no-email-ok] [--json]
 
 keywords.json: ["term", ...] or {"must": [...], "nice": [...]}. "A|B" lists true
 synonyms of the same thing ("CI/CD|continuous integration"), never two different tools.
-forbid.json:   ["term", ...] - any occurrence fails the check.
+forbid.json:   ["term", ...] (or an object of such lists) - any occurrence fails the
+               check. Write bare terms; an entry with a note ("Acme (NDA)", "X - not
+               claimable") or a list ("Acme, Globex") is also checked by its bare parts.
 --resume:      the JSON the PDF was built from (gives custom section labels and the
-               experience list for the --master comparison).
+               experience list for the --master comparison). In a translated resume each
+               job keeps the master's title/company/dates in "original", and the name in
+               meta.original_name; those are compared instead of the printed text.
 
 Missing keywords are reported, not failed: a keyword the candidate cannot honestly
 claim must stay missing. Exit code 1 on structural or truth problems.
@@ -47,7 +51,38 @@ TRANSLATE = str.maketrans({"–": "-", "—": "-", "‑": "-", "‐": "-",
 
 
 def load_json(path):
-    return json.loads(Path(path).read_text(encoding="utf-8-sig"))
+    try:
+        return json.loads(Path(path).read_text(encoding="utf-8-sig"))
+    except FileNotFoundError:
+        sys.exit(f"error: file not found: {path}")
+    except (ValueError, UnicodeDecodeError) as exc:
+        sys.exit(f"error: {path} is not valid UTF-8 JSON: {exc}")
+
+
+def term_groups(value, path):
+    """keywords.json / forbid.json: a list of terms, one term as text, or an object of such
+    lists ({"must": [...], "nice": [...]}). Anything else is refused, never ignored."""
+    groups = value if isinstance(value, dict) else {"must": value}
+    out = {}
+    for group, words in groups.items():
+        words = [words] if isinstance(words, str) else words
+        if not isinstance(words, list) or not all(isinstance(w, str) for w in words):
+            sys.exit(f'error: {path} must be a list of terms such as ["Figma", "Design Systems"], '
+                     "or an object of such lists")
+        out[group] = words
+    return out
+
+
+def bare_parts(term):
+    """A forbidden entry plus its bare parts: "Acme (NDA client)", "Acme - client" and
+    "Acme, Globex" are also checked as "Acme" and "Globex"."""
+    plain = re.sub(r"\([^)]*\)", " ", term.split(" # ")[0])
+    out = []
+    for part in (term, plain, *re.split(r"[,;]|\s+[-–—]\s+", plain)):
+        part = part.strip()
+        if part and part not in out:
+            out.append(part)
+    return out
 
 
 def norm(text):
@@ -63,7 +98,7 @@ def term_regex(term, plural=True):
       "JavaScript" and "C" does not match "C#" or "C++";
     - a term that starts with a symbol (".NET") may follow a word ("ASP.NET");
     - terms of up to 3 letters/digits are case-sensitive ("Go" is not "go/no-go");
-    - an English plural ending is accepted ("test case" = "test cases").
+    - an English plural ending is accepted ("design system" = "design systems").
     """
     term = norm(term).strip()
     if not term:
@@ -79,10 +114,6 @@ def term_regex(term, plural=True):
 
 def found(term, text, plural=True):
     return any((rx := term_regex(alt, plural)) and rx.search(text) for alt in term.split("|"))
-
-
-def as_list(value):
-    return [value] if isinstance(value, str) else list(value or [])
 
 
 def odd_characters(text):
@@ -119,18 +150,22 @@ def section_report(text, labels):
 
 
 def compare_with_master(resume, master):
-    """Titles, employers and dates must come from the master file unchanged."""
-    known = {(j.get("title"), j.get("company"), j.get("dates")) for j in master.get("experience", [])}
+    """Titles, employers and dates must come from the master file unchanged. A translated
+    job is compared through its "original" (the master's title, company and dates)."""
+    known = {(j.get("title"), j.get("company"), j.get("dates"))
+             for j in master.get("experience", []) if isinstance(j, dict)}
     problems = []
     for i, job in enumerate(resume.get("experience", []), 1):
         if not job.get("include", True):
             continue
-        key = (job.get("title"), job.get("company"), job.get("dates"))
+        src = job["original"] if isinstance(job.get("original"), dict) else job
+        key = (src.get("title"), src.get("company"), src.get("dates"))
         if key not in known:
-            problems.append(f'experience[{i}] "{job.get("title")}" at "{job.get("company")}" '
-                            f'({job.get("dates")}) does not match any job in the master resume '
+            problems.append(f'experience[{i}] "{src.get("title")}" at "{src.get("company")}" '
+                            f'({src.get("dates")}) does not match any job in the master resume '
                             "(title, employer and dates must stay identical)")
-    if resume.get("name") != master.get("name"):
+    name = (resume.get("meta") or {}).get("original_name") or resume.get("name")
+    if name != master.get("name"):
         problems.append("name differs from the master resume")
     return problems
 
@@ -144,6 +179,8 @@ def main():
     ap.add_argument("--master")
     ap.add_argument("--max-pages", type=int, default=2)
     ap.add_argument("--preview", help="directory for PNG page previews")
+    ap.add_argument("--no-email-ok", action="store_true",
+                    help="do not fail on a missing e-mail (only when the person gave none)")
     ap.add_argument("--json", action="store_true", help="print the report as JSON")
     args = ap.parse_args()
 
@@ -202,15 +239,20 @@ def main():
 
     text = norm(texts["pdfplumber"])
     report["has_email"] = bool(re.search(r"[\w.+-]+@[\w-]+\.[\w.]+", text))
-    if not report["has_email"]:
+    if not report["has_email"] and not args.no_email_ok:
         problems.append("no e-mail address found in the extracted text")
     placeholders = sorted(set(re.findall(r"\[[^\[\]\n]{1,40}\]", text)))
     if placeholders:
         problems.append(f"unfilled placeholders {placeholders} - a resume must not contain [brackets]: "
                         "use a confirmed fact or drop the phrase")
+    if re.search(r"\(\s*unconfirmed\s*\)", text, re.I):
+        problems.append('"(unconfirmed)" is in the text - confirm the fact with the user, or leave it out')
 
     if args.forbid:
-        hits = [t for t in as_list(load_json(args.forbid)) if found(t, text, plural=False)]
+        entries = [t for words in term_groups(load_json(args.forbid), args.forbid).values() for t in words]
+        hits = []
+        for entry in entries:
+            hits += [p for p in bare_parts(entry) if p not in hits and found(p, text, plural=False)]
         report["forbidden_found"] = hits
         if hits:
             problems.append(f"forbidden terms present: {hits} - remove them (not claimable or confidential)")
@@ -223,11 +265,8 @@ def main():
         problems += mismatches
 
     if args.keywords:
-        kw = load_json(args.keywords)
-        groups = {"must": kw} if isinstance(kw, (list, str)) else kw
         report["keywords"] = {}
-        for group, words in groups.items():
-            words = as_list(words)
+        for group, words in term_groups(load_json(args.keywords), args.keywords).items():
             missing = [w for w in words if not found(w, text)]
             total = len(words)
             report["keywords"][group] = {
@@ -239,6 +278,8 @@ def main():
         import pypdfium2 as pdfium
         out = Path(args.preview)
         out.mkdir(parents=True, exist_ok=True)
+        for old in out.glob("page_*.png"):            # a shorter rebuild must not leave stale pages
+            old.unlink()
         doc = pdfium.PdfDocument(str(pdf_path))
         for i in range(len(doc)):
             doc[i].render(scale=1.6).to_pil().save(out / f"page_{i + 1}.png")

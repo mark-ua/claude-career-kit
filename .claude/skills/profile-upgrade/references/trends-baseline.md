@@ -6,7 +6,8 @@ Recruiting tools change every few months, so advice is split in two:
 - **`career/trends.md`** - a dated, sourced note of what is current *right now*,
   refreshed by web research at most once every 30 days. `profile-upgrade` and
   `resume-tailor` both read it and either may refresh it with the procedure below;
-  `job-hunt` does not use it.
+  `profile-review` reads only its general sections and never writes it (the file is
+  about the user's own search); `job-hunt` does not use it.
 
 ## Refreshing `career/trends.md`
 

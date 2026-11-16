@@ -112,9 +112,9 @@ changelog.
 - Job titles and skills must be picked from suggestions; titles that are not in the
   normalized list cannot be added (choose the closest standard title and tell the
   user).
-- Cloudflare / "additional verification" pages appear, especially on job pages
-  (`viewjob`). Do not try to pass them; ask the user to pass the check in the tab,
-  or use the search page's side pane (`vjk=`) to read a description.
+- Cloudflare / "additional verification" pages can appear, especially on job pages
+  (`viewjob`). Do not try to pass them or get around them: stop and ask the user to
+  pass the check in the tab.
 - Boolean `OR` queries in job search are unreliable; run separate searches.
 
 ## 6. Things only the user can do

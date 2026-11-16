@@ -21,14 +21,17 @@ result - say so rather than padding the list with weak ones.
   as open questions instead.
 - **Read-only.** Search and read. Do not apply, click "Easy Apply" or "Apply" (on DOU
   and Djinni the button reads "Відгукнутись"), save jobs, message recruiters, or
-  change any account setting. If the user wants to
-  apply, that is a separate, explicit request.
+  change any account setting. If the user wants to apply, that is a separate,
+  explicit request. On cookie and consent banners choose the most private option
+  (reject what is not essential); new terms are for the user to accept.
 - **Their browser.** Use Claude in Chrome (load the `chrome-browser` skill first if
   available), in a new tab, with the accounts that are already signed in. If the
   extension is not connected, say so; offer to run only the boards that are public
   (see `references/sources.md`) through a web fetch, and wait for the answer. Do not
   type passwords or pass CAPTCHA / Cloudflare / "additional verification" pages -
-  skip that source, record its cards as `unread`, and say so in the run notes.
+  skip that source, record its cards as `unread`, and say so in the run notes. In an
+  unattended (scheduled) run nobody can answer: do not wait, skip what needs the user
+  and list it in the run notes.
 - **Account risk.** Job boards prohibit automated collection; LinkedIn in particular
   restricts accounts that browse like a scraper. Stay inside the budget below, one
   tab, one page at a time. Tell the user about this risk on the first run.
@@ -83,8 +86,9 @@ older than the window, and record it in `seen.json` so it is not re-read.
 
 Check `seen.json` once more by job ID, then open the description of each card that
 survives the pre-filter (up to the budget) and read the whole posting, not a keyword
-excerpt - requirements hide in the parts a filter drops. Extract: responsibilities, must-have and nice-to-have requirements, stack,
-domain/industry, seniority, employment type, location and eligibility wording
+excerpt - requirements hide in the parts a filter drops. Extract: responsibilities,
+must-have and nice-to-have requirements, stack, domain/industry, seniority,
+employment type, location and eligibility wording
 (countries, time zones, work authorization, "EU only", "US only"), language
 requirements, salary, posting date, company type (product / outsourcing / agency /
 startup), the employer's country, and the direct link.
@@ -102,8 +106,9 @@ is not guessed in either direction.
 For every vacancy that is recommended or needs checking, save the posting text to
 `career/job-search/vacancies/<board>-<job id>.md` (title, company, URL, date read,
 then the full description). If only part of the text could be read, the first line of
-the file says "EXCERPT" so that nobody tailors a resume from an incomplete posting. Postings disappear, and `resume-tailor` starts from this file
-instead of opening the page again.
+the file says "EXCERPT" so that nobody tailors a resume from an incomplete posting.
+Postings disappear, and `resume-tailor` starts from this file instead of opening the
+page again.
 
 Save the report to `career/job-search/<YYYY-MM-DD>.md` (add `-2`, `-3` for more runs
 the same day) and show the main table in chat.
@@ -181,7 +186,7 @@ descriptions; on LinkedIn at most 2 location scopes. Spend the page budget on th
 queries and boards that produced results last time (see the previous run notes),
 then prioritize descriptions by card title and company. Everything that survived the
 pre-filter but was not read goes under "Not read this run" and into `seen.json` as
-`unread: budget`.
+`unread: budget`. A scheduled search runs at most once a day.
 
 ## References
 

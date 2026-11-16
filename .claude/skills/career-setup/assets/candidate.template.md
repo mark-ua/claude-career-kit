@@ -33,6 +33,7 @@
 - Exclusions - countries / markets:
 - Exclusions - industries:
 - Interest domains (score higher):
+- Domains to avoid (score lower):
 - Job boards to search (the kit has ready patterns for LinkedIn, Indeed, DOU, Djinni; others can be listed):
 
 ## Skills and claims
@@ -40,6 +41,7 @@
 - Working level:
 - Differentiators (what makes me stand out):
 - Do not claim (no real experience - treat as gaps):
+- Currently learning (may be mentioned as learning, nothing more):
 - Known gaps for target roles:
 
 ## Disclosure rules
@@ -47,12 +49,13 @@
 - Allowed level of detail:
 
 ## Export check terms
-<!-- One term per line ("- term"). Used only by the kit export: it refuses to build a
-     shareable copy if any of these appear in the files being shared. Your name,
-     e-mail, phone, profile URLs, employers and schools from master-resume.json are
-     checked automatically. Add here: confidential client/project names, other
-     spellings of your name (for example in Cyrillic), nicknames, and short phrases
-     that would give away your personal situation. Text after " # " is a comment. -->
+<!-- One bare term per line ("- term"); a note goes after " # ". Used only by the kit
+     export: it refuses to build a shareable copy if any of these appear in the files
+     being shared. The Name above, and your name, e-mail, phone, handles, profile URLs,
+     employers and schools from master-resume.json are checked automatically. Add
+     here: confidential client/project names, other spellings of your name (for
+     example in Cyrillic) and your surname alone in each spelling, nicknames, and
+     short phrases that would give away your personal situation. -->
 -
 
 ## Style preferences

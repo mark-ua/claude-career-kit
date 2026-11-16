@@ -22,9 +22,11 @@ any list item may carry "include": false to keep it in the file but out of the o
   "summary": "3-4 lines.",
   "skills": [{"label": "Research", "items": "Interviews, Surveys, ..."}],
   "experience": [{"title": "", "company": "", "location": "", "dates": "Jan 2022 – Present",
-                  "intro": "", "bullets": ["..."]}],
+                  "intro": "", "bullets": ["..."],
+                  "original": {"title": "", "company": "", "dates": ""}}],   # translated resume only:
+                                                    # the master's version, for check_resume --master
   "projects": [{"name": "", "dates": "", "description": "", "bullets": []}],
-  "education": [{"degree": "", "school": "", "dates": ""}],
+  "education": [{"degree": "", "school": "", "dates": ""}],   # degree or school required
   "certifications": [{"name": "", "issuer": "", "issued": "Apr 2025", "expires": "",
                       "credential_id": "", "url": "", "skills": []}],   # only name, issuer, year are printed
   "languages": "English (C1), ..."
@@ -123,9 +125,9 @@ def validate(data):
             data[key] = ""
         if not isinstance(data[key], str):
             fail(f'"{key}" must be text')
-    required = {"contact": "text", "skills": "label", "experience": "title", "projects": "name",
-                "education": "degree", "certifications": "name"}
-    for section, key in required.items():
+    required = {"contact": ("text",), "skills": ("label",), "experience": ("title",), "projects": ("name",),
+                "education": ("degree", "school"), "certifications": ("name",)}   # degree is often not given
+    for section, keys in required.items():
         if data.get(section) is None:
             data[section] = []
         if not isinstance(data[section], list):
@@ -134,8 +136,11 @@ def validate(data):
             where = f'{section}[{i}]'
             if not isinstance(item, dict):
                 fail(f"{where} must be an object")
-            if not isinstance(item.get(key), str) or not item[key].strip():
-                fail(f'{where} needs "{key}" (text)')
+            for k, v in item.items():                 # "dates": 2015 is meant as text
+                if isinstance(v, (int, float)) and not isinstance(v, bool):
+                    item[k] = str(v)
+            if not any(isinstance(item.get(k), str) and item[k].strip() for k in keys):
+                fail(f'{where} needs ' + " or ".join(f'"{k}"' for k in keys) + " (text)")
             if "include" in item and not isinstance(item["include"], bool):
                 fail(f'{where}: "include" must be true or false (not text)')
             if "bullets" in item:
@@ -148,6 +153,8 @@ def validate(data):
     labels = data["meta"].get("labels") or {}
     if not isinstance(labels, dict) or set(labels) - set(LABELS):
         fail(f'"meta.labels" may only contain: {", ".join(LABELS)}')
+    if not all(isinstance(v, str) and v.strip() for v in labels.values()):
+        fail('"meta.labels" values must be non-empty text')
     return data
 
 
@@ -220,8 +227,15 @@ def sections(data):
             group.append(("bullets", pr["bullets"]))
         projects.append(group)
     add("projects", projects)
-    add("education", [[("job", ed["degree"]), ("meta", join_meta(ed.get("school"), ed.get("dates")))]
-                      for ed in included(data["education"])])
+    schools = []
+    for ed in included(data["education"]):
+        degree = str(ed.get("degree") or "").strip()
+        group = [("job", degree or ed["school"])]          # no degree given: the school is the line
+        meta = join_meta(ed.get("school") if degree else "", ed.get("dates"))
+        if meta:
+            group.append(("meta", meta))
+        schools.append(group)
+    add("education", schools)
     certs = [cert_line(c) for c in included(data["certifications"])]
     add("certifications", [[("bullets", certs)]] if certs else [])
     add("languages", [[("body", data["languages"])]] if data["languages"] else [])

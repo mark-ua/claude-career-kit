@@ -26,8 +26,9 @@ Greeting: the hiring manager's or recruiter's name if the research found it, oth
 
 - Every claim must be traceable to the master resume; same disclosure rules apply.
 - Address a visible gap once, honestly and briefly, only if it is a must-have
-  ("I have not used X in production; I have Y, which is close, and have started X").
-  Do not apologize and do not list several gaps.
+  ("I have not used X in production; I have Y, which is close" - add "and have
+  started X" only if `candidate.md` says the candidate is learning it). Do not
+  apologize and do not list several gaps.
 - Use their vocabulary for the two or three key terms; the rest in plain language.
 - No "I am writing to apply", "I believe I would be a great fit", "passionate",
   "synergy", or restating the resume line by line.

@@ -64,7 +64,8 @@ without "I". No adjectives that cannot be checked ("passionate", "results-driven
 ## Experience bullets
 
 - Pattern: **action verb + what + how/with what + measurable result**.
-  "Cut release regression from 3 days to 6 hours by automating 400 API checks in CI."
+  "Cut onboarding drop-off from 41% to 23% by redesigning the first-run flow after
+  12 user interviews."
 - Order bullets by relevance to this vacancy, not by chronology or pride.
 - Latest/most relevant role: 5-7 bullets. Previous: 3-4. Older than ~8-10 years or
   irrelevant: a single line or title + dates only.

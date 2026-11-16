@@ -20,9 +20,10 @@ their account, no password, no access to their profile.
 ## Ground rules
 
 - **Their data, their consent.** Work only from what the person sent or agreed to
-  share. It goes into `career/reviews/<YYYY-MM-DD>_<first-last>/`, which is private,
+  share, and make sure the user has told them that an AI assistant (Claude) will read
+  it. It goes into `career/reviews/<YYYY-MM-DD>_<first-last>/`, which is private,
   ignored by git and never exported. Never copy their facts into the user's own files
-  (`candidate.md`, `master-resume.json`) or into a skill.
+  (`candidate.md`, `master-resume.json`, `trends.md`) or into a skill.
 - **Offline.** Do not edit, log into, follow or message their account. Opening their
   public profile in the user's Chrome is allowed only when the user says the person
   agreed - read-only, that one profile (LinkedIn shows them who viewed it). The PDF
@@ -56,8 +57,10 @@ their account, no password, no access to their profile.
    ```
 
    Read `profile.md` and check that every position, the education and the
-   certifications came through in a sensible order. If the text is garbled or empty
-   (a scan), ask for the LinkedIn export, a text resume, or screenshots.
+   certifications came through in a sensible order. If the dates ended up apart from
+   their jobs (a resume with a date column), rerun with `--no-split`. If the text is
+   garbled or empty (a scan), or the file is password-protected, ask for the LinkedIn
+   export, a text resume, or screenshots.
 3. Note what a LinkedIn PDF export does **not** contain: the full skills list (only
    "Top Skills"), Featured, recommendations, photo and banner, Open to Work settings,
    activity, and which skills are linked to which position. Do not judge what you
@@ -73,16 +76,19 @@ their account, no password, no access to their profile.
 
 Write `profile.json` in the master-resume schema
 (`.claude/skills/career-setup/assets/master-resume.template.json`) with only what the
-sources show. Put everything in; mark anything inferred with `"note": "unconfirmed"`.
+sources show. Put everything in; anything inferred gets "(unconfirmed)" at the end of
+its text, as in the user's own files, so that it cannot reach the resume unnoticed.
 This file is the truth source for both the plan and the resume.
 
 ### 3. Audit
 
 - Read `.claude/skills/profile-upgrade/references/linkedin.md` (how recruiters
-  search, field limits, the audit checklist) and `career/trends.md` if it exists and
-  is less than 30 days old. If it is missing or stale and web search is available,
-  refresh it once with `.claude/skills/profile-upgrade/references/trends-baseline.md`
-  - one refresh serves every review that month.
+  search, field limits, the audit checklist),
+  `.claude/skills/profile-upgrade/references/trends-baseline.md`, and the general
+  LinkedIn and ATS sections of `career/trends.md` if it is less than 30 days old.
+  That file is about the user's own search: do not refresh or edit it from here.
+  If web search is available, check what is current for the person's field and
+  write it to `trends-notes.md` in the review folder.
 - Score Search, Skim and Trust 0-5 with one line of evidence each, for the person's
   target role, and pick the 5-8 changes with the biggest effect. Areas you cannot
   see stay unscored and are named as such.
@@ -139,8 +145,10 @@ Writing rules:
 - **No placeholders in a resume.** Where a number is unknown, write the bullet
   without it. The checker fails on any `[bracket]` left in the PDF.
 - Contact line: city and country, e-mail, LinkedIn URL - as given in what they
-  sent; a phone number only if they included it. `meta.page_size` is `letter` for
-  US/Canada targets, otherwise `a4`.
+  sent; a phone number only if they included it. If there is no e-mail, ask the user
+  for the one the person wants on the resume; never make one up. If there is none,
+  check with `--no-email-ok` and tell the user the resume still needs one.
+  `meta.page_size` is `letter` for US/Canada targets, otherwise `a4`.
 - `forbid.json`: a JSON list of anything the person asked not to mention (`[]` if
   nothing).
 - Build, check with `--master <folder>/profile.json`, look at the preview, and do a
@@ -183,6 +191,7 @@ underscores only in names:
 | `resume.json`, `forbid.json` | resume data, terms that must not appear |
 | `<First>_<Last>_<Role>_Resume.pdf` | the resume |
 | `preview/` | PNG pages of both files |
+| `trends-notes.md` | what is current for the person's field (when researched) |
 | `message.md` | a note for the user to send with the files |
 
 ## Scripts

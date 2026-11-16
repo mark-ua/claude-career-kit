@@ -58,16 +58,17 @@ responsibilities, requirements (must-have vs nice-to-have), stack, process hints
 posting date, and who posted it. Sources, in this order:
 
 1. a snapshot saved by `job-hunt` in `career/job-search/vacancies/` for the same job
-   (match by job ID or URL) - use it and note its date;
+   (match by job ID or URL) - use it and note its date. If its first line says
+   "EXCERPT", it is incomplete: get the full text from the sources below;
 2. a plain web fetch of the link - only if it returns the posting word for word. A
    fetch tool that hands back a summary or paraphrase is not enough: requirements
    must be matched against their exact wording, so read the page text in the browser
    instead;
 3. the user's Chrome through the Claude in Chrome extension (load the
    `chrome-browser` skill first if available) for boards that need a login or block
-   fetches. For Indeed links use the side-pane method described in
-   `.claude/skills/job-hunt/references/sources.md` - the direct job page often shows
-   a security check. Do not try to pass a security check or CAPTCHA;
+   fetches. For Indeed, read the posting in the search page's side pane as described
+   in `.claude/skills/job-hunt/references/sources.md`. If a security check or CAPTCHA
+   appears, do not try to pass it or get around it - ask the user;
 4. if none of these works, ask the user to paste the posting text.
 
 Save a snapshot to `vacancy.md` in the application folder (see "Outputs") - postings
@@ -154,7 +155,8 @@ In short:
   user asks for one page, cut to one page.
 
 Write `forbid.json` in the application folder: a JSON list of every term from
-"Do not claim" and from "Disclosure rules → must not be named" in `candidate.md`.
+"Do not claim" and from "Disclosure rules → must not be named" in `candidate.md` -
+bare terms, one name or tool per entry, without notes (`["Kubernetes", "Acme Bank"]`).
 
 Build and check (see "Scripts"). Iterate until the checker reports no problems and
 the PDF preview looks clean. Then do a **truth pass**: reread every line of the final
@@ -178,8 +180,11 @@ company brief, founder/CEO brief, likely interview topics, smart questions to as
 flags, and salary notes.
 
 Finally record the pack in `career/job-search/seen.json`: add `"pack": "<folder
-name>"` to this vacancy's entry (create the entry, keyed `<board>:<job id>`, with
-verdict `recommended` if it does not exist) so job searches do not present it as new.
+name>"` to this vacancy's entry so job searches do not present it as new. If the
+entry is missing or its verdict is `unread: …`, set the verdict to `recommended` and
+`score` to the match score. Key a new entry `<board>:<job id>`; for a posting from
+anywhere else (a company site, pasted text) use `other:<company>-<role>` (lowercase,
+hyphens).
 
 ### 7. Mock interview - only when asked
 
@@ -196,7 +201,7 @@ sending when there is no specific vacancy.
 - Start from `career/master-resume.json`; aim it at the first target title in
   `candidate.md`; apply the same rules: length limit, disclosure rules, `forbid.json`,
   truth pass, checker with `--master`. There is no `keywords.json`.
-- Output: `career/resume/resume.json` and
+- Output: `career/resume/resume.json`, `career/resume/forbid.json` and
   `career/resume/<First>_<Last>_<Target-Role>_Resume.pdf`.
 - Show the result to the user. Uploading it anywhere (for example replacing the file
   on Indeed) is done by `profile-upgrade`, after the user's yes.
@@ -209,11 +214,18 @@ language, write the content in that language and set the headings in
 `education`, `certifications`, `languages`). Pass `--resume resume.json` to the
 checker so it looks for the same headings. Dates follow that language's usual form.
 
+A translated job keeps the master's version for the `--master` comparison: add
+`"original": {"title": ..., "company": ..., "dates": ...}` copied unchanged from
+`master-resume.json`, and `meta.original_name` if the name is written differently.
+The truth pass then checks that each translation says the same thing.
+
 ## Outputs
 
 Everything for a vacancy goes into one folder:
 `career/applications/<YYYY-MM-DD>_<company>_<role>/`. In folder and file names use
-only letters, digits, hyphens and underscores (replace everything else with a hyphen).
+only letters, digits, hyphens and underscores (replace everything else with a hyphen),
+and keep the company and role short - about 30 characters each - so the paths stay
+well within Windows' 260-character limit.
 
 | File | Content |
 |---|---|
@@ -226,6 +238,8 @@ only letters, digits, hyphens and underscores (replace everything else with a hy
 | `cover-letter.md` | cover letter |
 | `prep.md` | study list + company and founder/CEO brief |
 | `interview.md` | mock interview Q&A (on request) |
+| `interview-session-<date>.md` | a live mock interview with feedback (on request) |
+| `preview/`, `<resume>.extracted.txt` | PNG pages and the text an ATS reads, written by the checker |
 
 Finish with a short chat summary: match score and recommendation, the 3-5 biggest
 changes made to the resume and why, keyword coverage with the missing terms, gaps, and
@@ -259,10 +273,14 @@ Check:
 <py> .claude/skills/resume-tailor/scripts/check_resume.py <folder>/<Name>_<Role>_<Company>.pdf --resume <folder>/resume.json --master career/master-resume.json --keywords <folder>/keywords.json --forbid <folder>/forbid.json --preview <folder>/preview
 ```
 
-- Quote any path that contains spaces. Python 3.10 or newer is required.
+- Quote any path that contains spaces. Python 3.10 or newer is required - check it
+  before creating the venv (macOS's built-in `python3` is often 3.9; on Windows
+  without the `py` launcher use `python`).
 - The builder stops if it cannot find a TrueType font (Arial, Liberation Sans, Arimo,
   Noto Sans or DejaVu Sans); on Linux install one of them, or pass
   `--font REGULAR.ttf BOLD.ttf`.
+- Add `--max-pages 1` to the check when the resume must fit one page (up to ~7
+  years of experience, or when the user asked); the default allows two.
 - Look at the PNG previews after every build - the checker cannot see an ugly page
   break or a last page with three lines on it.
 - Add `--docx <same name>.docx` to the build only when the application form asks for

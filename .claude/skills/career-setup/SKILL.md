@@ -36,7 +36,9 @@ runs, such as a scheduled job search, use it.
    Keep the person's real titles, employers and dates exactly. Put *everything* in -
    this file is allowed to be long; tailoring trims it later. Internal remarks go in
    a `note` field, never inside text that is printed (`description`, `intro`,
-   `bullets`, `summary`).
+   `bullets`, `summary`). The one exception is the marker "(unconfirmed)": it stays
+   at the end of an inferred fact's text until the user confirms it, so the resume
+   checker refuses any resume that would print it.
 4. **Draft `career/candidate.md`** from `assets/candidate.template.md`.
 5. **Interview for what documents never contain** (ask in 2-3 compact rounds, not one
    long questionnaire):
@@ -51,9 +53,11 @@ runs, such as a scheduled job search, use it.
      working-level, and which should **not** be claimed;
    - profile URLs: LinkedIn, Indeed, others;
    - style preferences for how they like to be presented.
-6. **Fill "Export check terms"** in `candidate.md`: every confidential name from the
-   disclosure rules, other spellings of the person's name (for example in Cyrillic),
-   nicknames and handles. The export tool uses this list.
+6. **Fill "Export check terms"** in `candidate.md`, one bare term per line (a note
+   goes after " # "): every confidential name from the disclosure rules, other
+   spellings of the person's name (for example in Cyrillic) and the surname alone in
+   each spelling, nicknames and handles. If the name is written surname first, list
+   the surname too. The export tool uses this list.
 7. **Confirm.** Show a compact summary of both files and ask for corrections. Nothing
    is a fact until the user has seen it; anything you inferred is written with
    "(unconfirmed)" after it until they confirm.
@@ -67,7 +71,10 @@ runs, such as a scheduled job search, use it.
      | interpreter `<py>` | `career/.venv/bin/python` | `career/.venv/Scripts/python.exe` |
 
      then `<py> -m pip install --prefer-binary -r .claude/skills/resume-tailor/scripts/requirements.txt`.
-     On Debian/Ubuntu `python3-venv` may need to be installed first.
+     Check the version before creating the venv. On macOS the `python3` from Apple's
+     Command Line Tools is often 3.9 - too old; offer a current Python from python.org
+     or Homebrew and create the venv with it. On Windows without the `py` launcher, use
+     `python`. On Debian/Ubuntu `python3-venv` may need to be installed first.
    - Claude in Chrome: required for `profile-upgrade` and `job-hunt`, and used by
      `resume-tailor` for postings behind a login. If the extension is not connected,
      say which skills are affected and continue.

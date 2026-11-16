@@ -10,8 +10,9 @@ owner lives in `career/`. Sharing is a copy of the skills plus the kit's root fi
 (README, CLAUDE.md, LICENSE, .gitignore), after two checks that nothing personal
 slipped into a skill file:
 
-- the **script** catches known identifiers (name, e-mail, phone, profile URLs,
-  employers, schools, and the "Export check terms" list in `career/candidate.md`);
+- the **script** catches known identifiers (name, e-mail, phone, handles, profile
+  URLs, employers, schools, the names of people reviewed with `profile-review`, and
+  the "Export check terms" list in `career/candidate.md`);
 - a **read-through** catches what no word list can: a personal fact rewritten as an
   "example" (a preference, a situation, a gap that is recognisably the owner's).
 
@@ -32,18 +33,25 @@ itself is written in English.
    On Windows use `py -3` in place of `python3`. Options:
    - `--out <path.zip>` (default `dist/career-kit_<YYYY-MM-DD>.zip`)
    - `--to-dir <folder>` - write the clean kit into a folder (for example a git
-     checkout) instead of a zip. It replaces that folder's `.claude/skills/` and the
-     kit's root files and leaves everything else, such as `.git`, alone. Add `--out`
+     checkout) instead of a zip. The folder must be new, empty (a `.git` folder alone
+     is fine) or hold an earlier copy of the kit. The kit's own skill folders and
+     root files are replaced, the kit's rules are added to `.gitignore`, and
+     everything else - `.git`, other skills, `career/` - is left alone. Add `--out`
      to get a zip as well.
    - `--project <root>` (default: current directory)
-   - `--extra-term "<text>"` (repeatable) - extra terms for this run, for example the
-     names of people whose profiles were reviewed with `profile-review`
+   - `--extra-term "<text>"` (repeatable) - extra terms for this run. The names of
+     people reviewed with `profile-review` are taken from `career/reviews/`
+     automatically; use this for anyone else.
    - `--allow "<term>"` (repeatable) - skip one term, see step 2
    - `--allow-empty-terms` - only when `career/` holds no personal data yet
+   - `--mark-reviewed` - record the export as read through, see step 3
+   - `--show-terms` - list the private terms that were checked. The list is personal
+     data: do not paste it anywhere.
 
    The script blocks the export and writes nothing when it finds a private term in a
    file's text or in a file name, a file of an unknown type, a file that is not
-   UTF-8, a symlink, or no private terms to check against.
+   UTF-8, a symlink, a `career/` folder that is set up only halfway, or no private
+   terms to check against.
 
 2. **If the export is blocked**, do not work around it.
    - Leak hit: open the file, replace the personal detail with a neutral example (or
@@ -54,14 +62,19 @@ itself is written in English.
      carries no personal data.
    - False positive (a common word that equals a private term): tell the user which
      term matched and where, and rerun with `--allow "<term>"` only on their say-so.
-     Never allow a name, e-mail, employer or client.
+     Never allow a person's name or e-mail. An employer, school or client may be
+     allowed only when its name is a word the kit itself needs (an employer called
+     "LinkedIn", say); the GitHub handle a kit is published under may stay in the
+     README and LICENSE.
 
-3. **Read-through.** The script prints the files changed since the last export (all
-   files on the first export). Read each of them and compare the examples and
+3. **Read-through.** The script lists the files changed since the last read-through
+   (all files the first time). Read each of them and compare the examples and
    wording with `career/candidate.md`: no example may mirror the owner's own
    situation, preferences, exclusions, gaps, stack or employers - or the details of
    anyone whose profile was reviewed. Rewrite anything that does and rerun the
-   script. Report to the user that this was done and what, if anything, was changed.
+   script. When the read-through is done, rerun once with `--mark-reviewed` so that
+   the next export lists only what changes after this point - never for files nobody
+   read. Report to the user that this was done and what, if anything, was changed.
 
 4. **Report** the zip path or folder, the skills included with the kit version, and
    what is *not* included (`career/` - personal data, resumes, applications, search
@@ -71,9 +84,10 @@ itself is written in English.
 
 5. Do not send the zip anywhere yourself (e-mail, chat, upload), and do not commit,
    push or publish the folder, unless the user asks for that step and names where it
-   goes. For a public repository, also check the commit author e-mail before the
-   first push: a work or personal address in `git config` becomes public with the
-   commits (GitHub's `<id>+<login>@users.noreply.github.com` address avoids that).
+   goes. For a public repository, also check the commit author name and e-mail
+   (`git config user.name` / `user.email`) before the first push: both become public
+   with the commits. GitHub's `<id>+<login>@users.noreply.github.com` address keeps
+   a work or personal e-mail out of them.
 
 ## When a new skill is added to the kit
 
@@ -82,6 +96,7 @@ skill files - use neutral ones from a different profession than the owner's.
 
 ## What the recipient does
 
-Unzip (or clone), open **the folder that contains `README.md`** in Claude Code, and
-say "set up the career kit for me" (or `/career-setup`) in any language. The README
-inside explains the rest.
+Unzip the file into a folder of its own (with the `unzip` command:
+`unzip <file>.zip -d career-kit`) or clone the repository, open **the folder that
+contains `README.md`** in Claude Code, and say "set up the career kit for me" (or
+`/career-setup`) in any language. The README inside explains the rest.

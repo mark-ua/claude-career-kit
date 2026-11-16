@@ -2,7 +2,7 @@
 
 Claude Code skills for a job search. They help you get a profile recruiters can find,
 fresh vacancies ranked by real fit, a resume tailored to each job, and interview prep.
-Everything works from one private file of facts about you.
+Everything works from one private folder of facts about you.
 
 The kit works in any language. Claude answers in the language you write in, and
 English is the default.
@@ -24,7 +24,7 @@ English is the default.
 your kit folder/
 ├── README.md, CLAUDE.md
 ├── .claude/skills/          the skills (no personal data)
-└── career/                  YOUR data: stays on your computer, ignored by git
+└── career/                  YOUR data: stored only on your computer, ignored by git
     ├── candidate.md             goals, preferences, what may and may not be said
     ├── master-resume.json       every job, bullet and skill: the "truth bank"
     ├── trends.md                current hiring trends, refreshed about monthly
@@ -66,7 +66,8 @@ experience: a skill you don't have goes on your study list, not into the resume.
    - "tailor my resume to https://..." (or `/resume-tailor <link>`)
    - "run a mock interview for that job"
 
-To update the kit later, run `git pull`. It doesn't touch your `career/` folder.
+To update the kit later, run `git pull` in the cloned folder, or download the ZIP
+again and unzip it over the old one. Neither touches your `career/` folder.
 
 ## Requirements
 
@@ -78,6 +79,9 @@ To update the kit later, run `git pull`. It doesn't touch your `career/` folder.
   a robot" checks; you do those.
 - **Python 3.10 or newer**, to build the PDF resumes and plans (`python3` on
   macOS/Linux, `py -3` on Windows). Setup installs the dependencies after you agree.
+  On a Mac, the `python3` that comes with Apple's developer tools can be 3.9: install
+  a current Python from python.org or Homebrew. On Windows, if `py` is not found, use
+  `python`.
 - **On Linux**, one of these fonts: Liberation Sans, DejaVu Sans, Noto Sans or Arimo.
 
 ## Know this before you start
@@ -86,11 +90,14 @@ To update the kit later, run `git pull`. It doesn't touch your `career/` folder.
   site, and Indeed and job boards have similar rules. The skills work at low volume,
   one page at a time, with no bulk actions. It is still automation, though, and an
   account restriction can't be ruled out, so using the browser skills is your
-  decision. Some uses don't touch any website at all: `profile-review`,
-  `resume-tailor` with a pasted posting, and `career-setup` from a resume file.
-- **Your data stays local.** `career/` is in `.gitignore`. But if the kit folder sits
-  in iCloud Drive, OneDrive or Dropbox (including a synced "Documents" folder), that
-  cloud gets a copy. Keep the kit somewhere else if you don't want that.
+  decision. Some uses don't need your accounts on these sites at all:
+  `profile-review`, `resume-tailor` with a pasted posting (it still searches the
+  public web about the company), and `career-setup` from a resume file.
+- **Your data is stored locally.** `career/` is in `.gitignore`. Claude reads these
+  files while it works, so their content goes to Claude like the rest of the
+  conversation. If the kit folder sits in iCloud Drive, OneDrive or Dropbox (including
+  a synced "Documents" folder), that cloud gets a copy too. Keep the kit somewhere
+  else if you don't want that.
 - **Nothing is published without your yes.** Before a profile edit, Claude shows the
   before and after and waits for you. Afterwards it rereads the page to verify.
 - **Nothing is sent.** Claude doesn't send applications, messages or e-mails.
@@ -105,6 +112,8 @@ To update the kit later, run `git pull`. It doesn't touch your `career/` folder.
 2. the role they are aiming for, and where and how they want to work;
 3. anything that must not be mentioned, for example because their current employer
    can see the profile.
+
+Tell them that Claude, an AI assistant, will read what they send.
 
 Claude makes two files in `career/reviews/<date>_<name>/`:
 

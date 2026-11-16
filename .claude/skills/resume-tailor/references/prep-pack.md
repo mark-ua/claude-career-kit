@@ -24,7 +24,7 @@ Vacancy: <url> · Saved: <date> · Match: <score>/100 · Verdict: <apply / with 
 ## 4. Company in brief
 - What they do / for whom / business model
 - Size, stage, funding or owner, HQ, where the team sits
-- Product and tech: stack, release cadence, anything public about quality/testing
+- Product and tech: stack, release cadence, anything public about how they build and ship
 - Recent news (last 6-12 months)
 - What employees say (source + date)
 - Why this role is open (if known or inferable - mark inference as such)

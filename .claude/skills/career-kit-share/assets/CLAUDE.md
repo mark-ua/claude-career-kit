@@ -7,8 +7,9 @@ private data lives in `career/`.
 
 - Answer in the language of the user's latest message. When it is unclear (a bare
   command, a link, mixed languages), use English.
-- Notes and reports written for the user (search reports, fit analyses, prep notes,
-  review plans) use the same language unless the user asks for another one.
+- Notes and reports written for the user (search reports, fit analyses, prep notes)
+  use the same language unless the user asks for another one. A `profile-review` plan
+  is written for the other person, in their language.
 - Unattended runs (scheduled tasks) use the communication language set in
   `career/candidate.md`, or English.
 - Documents for employers and recruiters follow each skill's own rule: resumes, cover
