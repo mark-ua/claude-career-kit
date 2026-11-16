@@ -1,0 +1,51 @@
+{
+  "meta": {
+    "page_size": "a4",
+    "updated": "YYYY-MM-DD",
+    "notes": "Master resume: the full truth bank. Tailored resumes copy this file and trim it. Any list item may carry \"include\": false (kept here, left out of the output) and \"note\" (internal remark, never printed)."
+  },
+  "name": "First Last",
+  "headline": "Target Role | Main strength | Core tools",
+  "contact": [
+    {"text": "City, Country (UTC+0)"},
+    {"text": "Open to remote"},
+    {"text": "+00 000 000 0000"},
+    {"text": "name@example.com", "link": "mailto:name@example.com"},
+    {"text": "linkedin.com/in/your-slug", "link": "https://www.linkedin.com/in/your-slug/"}
+  ],
+  "summary": "3-4 lines: who you are, years and scope, two strongest proofs, what you are open to.",
+  "skills": [
+    {"label": "Group name", "items": "Skill, Skill, Skill"}
+  ],
+  "experience": [
+    {
+      "title": "Job Title",
+      "company": "Company",
+      "location": "City, Country (Remote)",
+      "dates": "Jan 2022 – Present",
+      "intro": "One line of context: product, team size, your scope.",
+      "bullets": [
+        "Action verb + what + how + measurable result"
+      ],
+      "include": true,
+      "note": ""
+    }
+  ],
+  "projects": [],
+  "education": [
+    {"degree": "Degree, Field", "school": "University, City, Country", "dates": "2010 – 2015"}
+  ],
+  "certifications": [
+    {
+      "name": "Certificate name",
+      "issuer": "Issuer",
+      "issued": "May 2025",
+      "expires": "",
+      "credential_id": "",
+      "url": "",
+      "skills": [],
+      "include": true
+    }
+  ],
+  "languages": "English (C1), ..."
+}

@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "page_size": "a4",
+    "labels": {"where": "Where", "now": "Now", "chars": "characters", "page": "Page"}
+  },
+  "title": "LinkedIn: profile update plan",
+  "person": "Alex Example",
+  "subtitle": "linkedin.com/in/alex-example · profile as of 20 Nov 2026",
+  "footer": "LinkedIn update plan · Alex Example · 20 Nov 2026",
+  "intro": [
+    "The profile already has a strong base: 6 years in analytics, two promotions and dashboards used by a whole sales team. Below, section by section: what to change, where to find it in LinkedIn, and the ready text.",
+    "**How to use it.** Copy the texts in blue boxes from the Word file (.docx): PDF viewers add line breaks when copying. [Square brackets] are your data: fill them in or delete the phrase. Keep nothing you could not back up in an interview. While editing, switch off \"Notify network\" in each form."
+  ],
+  "sections": [
+    {
+      "heading": "0. Answer these questions first",
+      "blocks": [
+        {"type": "text", "text": "The answers change the headline and a few lines in Experience."},
+        {"type": "table", "columns": ["#", "Question", "What it affects"], "widths": [1, 9, 5],
+         "rows": [
+           ["1", "Which role do you want next: Senior Data Analyst or Analytics Engineer?", "Headline, Open to Work titles"],
+           ["2", "How many people used the sales dashboard every week?", "The [N] in Acme Retail, About"]
+         ]}
+      ]
+    },
+    {
+      "heading": "1. The changes with the biggest effect",
+      "blocks": [
+        {"type": "table", "columns": ["#", "What to do", "Why it matters"], "widths": [1, 6, 8],
+         "rows": [
+           ["1", "New headline (section 2)", "Recruiters search by job title and tools; the first 60 characters show in search results"],
+           ["2", "About with numbers (section 3)", "The first three lines decide whether anyone clicks \"see more\""]
+         ]}
+      ]
+    },
+    {
+      "heading": "2. Top card",
+      "blocks": [
+        {"type": "subheading", "text": "2.1 Headline"},
+        {"type": "where", "text": "pencil in the top card → Edit intro → Headline (220 characters at most)"},
+        {"type": "now", "text": "Data enthusiast | Numbers person"},
+        {"type": "paste", "label": "Recommended", "limit": 220,
+         "text": "Senior Data Analyst | SQL, Python, Power BI | Sales & retail analytics | Dashboards used by [N]+ people weekly"},
+        {"type": "note", "text": "Why: the title in its standard form plus the three tools that appear in most postings for this role."}
+      ]
+    },
+    {
+      "heading": "3. About",
+      "blocks": [
+        {"type": "where", "text": "About → pencil (2,600 characters at most; about 260 are visible before \"see more\")"},
+        {"type": "paste", "label": "Paste", "limit": 2600,
+         "text": "Data analyst with 6 years in retail and logistics analytics. I turn sales and supply data into dashboards and forecasts that teams use every week.\n\nWHAT I DO\n• SQL and Python for data preparation and analysis\n• Power BI dashboards for sales and operations teams\n• Forecasts and A/B test analysis\n\nWHAT I'M LOOKING FOR\nA Senior Data Analyst role, remote or hybrid in [city].\nMessage me here."},
+        {"type": "bullets", "items": ["Fill in [city] or delete the phrase.", "Do not add salary expectations to LinkedIn."]}
+      ]
+    }
+  ]
+}

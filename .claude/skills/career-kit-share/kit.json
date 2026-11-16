@@ -1,0 +1,17 @@
+{
+  "name": "career-kit",
+  "version": "1.1.0",
+  "skills": [
+    "career-setup",
+    "profile-upgrade",
+    "resume-tailor",
+    "job-hunt",
+    "profile-review",
+    "career-kit-share"
+  ],
+  "root_files": {
+    "README.md": "career-kit-share/assets/README.md",
+    "CLAUDE.md": "career-kit-share/assets/CLAUDE.md",
+    "LICENSE": "career-kit-share/assets/LICENSE.txt"
+  }
+}

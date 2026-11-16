@@ -1,0 +1,11 @@
+# Personal data - never commit or share
+career/*
+!career/.gitkeep
+dist/
+
+# Local tooling
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+.claude/settings.local.json
