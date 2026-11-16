@@ -44,8 +44,9 @@ experience: a skill you don't have goes on your study list, not into the resume.
 ## Quick start
 
 1. Install **Claude Code** (desktop app or CLI). For the browser skills, also install
-   the **Claude in Chrome** extension. In the CLI, connect Chrome by starting
-   `claude --chrome` or with the `/chrome` command.
+   the [Claude in Chrome](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn)
+   extension in Google Chrome. In the CLI, connect Chrome by starting `claude --chrome`
+   or with the `/chrome` command ([setup guide](https://code.claude.com/docs/en/chrome)).
 2. Get the kit:
 
    ```bash
@@ -73,8 +74,10 @@ again and unzip it over the old one. Neither touches your `career/` folder.
 
 - **Claude Code**, desktop app or CLI. It needs a Claude subscription or an API
   account.
-- **Claude in Chrome extension**, for `profile-upgrade`, `job-hunt`, and
-  `resume-tailor` when a posting is behind a login. Claude works in your Chrome, in
+- **[Claude in Chrome](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn)
+  extension**, for `profile-upgrade`, `job-hunt`, and `resume-tailor` when a posting
+  is behind a login. It needs a paid Claude plan: if Claude Code is signed in with an
+  API key, the browser connection stays off. Claude works in your Chrome, in
   sessions you are already signed in to. It doesn't type passwords or pass "I am not
   a robot" checks; you do those.
 - **Python 3.10 or newer**, to build the PDF resumes and plans (`python3` on
